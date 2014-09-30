@@ -17,8 +17,7 @@ import java.net.MalformedURLException;
  * The extension policy (slack days) are described by the extendDeadline function.
  */
 public class RulesOf6005 {
-	private static final String courseUrlString =
-		"http://stellar.mit.edu/S/course/6/fa11/6.005/courseMaterial/topics/topic1/syllabus/text/text";
+	
 	
 	/**
 	 * Tests if the string is one of the items in the Course Elements section. 
@@ -30,6 +29,8 @@ public class RulesOf6005 {
 	public static boolean hasFeature(String name){
 		String target = "<strong>" + name + "</strong>";
 		int targetLength = target.length();
+		final String courseUrlString =
+			"http://stellar.mit.edu/S/course/6/fa11/6.005/courseMaterial/topics/topic1/syllabus/text/text";
 		try {
 			// fetch the syllabus page of course 6.005
 			String courseSyllabus = WebUtils.fetch(courseUrlString);
@@ -75,8 +76,18 @@ public class RulesOf6005 {
 	 * @return the resulting grade out of a hundred
 	 */
 	public static int computeGrade(int quiz, int pset, int project, int participation){
-		// TODO: Fill in this method, then remove the RuntimeException
-        throw new RuntimeException("computeGrade not implemented");
+		int grade = 0;
+		
+		final double QUIZ_WEIGHT = 0.20;
+		final double PSET_WEIGHT = 0.40;
+		final double PROJ_WEIGHT = 0.30;
+		final double PART_WEIGHT = 0.10;	
+		grade = (int) (Math.round
+				(((quiz * QUIZ_WEIGHT)
+				+ (pset * PSET_WEIGHT)
+				+ (project * PROJ_WEIGHT)
+				+ (participation * PART_WEIGHT))));
+		return grade;
 	}
 	
 	
@@ -95,8 +106,13 @@ public class RulesOf6005 {
 	 * @return a new instance of a Calendar with the date and time set to when the assignment will be due
 	 */
 	public static Calendar extendDeadline(int request, int budget, Calendar duedate){
-		// TODO: Fill in this method, then remove the RuntimeException
-        throw new RuntimeException("extendDeadline not implemented");
+		Calendar extendedDuedate = new GregorianCalendar();
+		extendedDuedate.clear();
+		extendedDuedate.setTime(duedate.getTime());
+		final int MAX_SLACK_DAY = 3;
+		int extension = MathUtils.tripleMin(request, budget, MAX_SLACK_DAY);
+		extendedDuedate.add(Calendar.DATE, extension);
+		return extendedDuedate;
 	}
 	
 	
