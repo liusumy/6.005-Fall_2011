@@ -33,7 +33,37 @@ public class BaseTranslator {
      */
     public static int[] convertBase(int[] digits, int baseA,
                                     int baseB, int precisionB) {
-        // TODO: Implement (Problem 2.b)
-        return null;
+    	
+    	// If baseA < 2, baseB < 2, precisionB < 1, or the input digits is empty, return null
+    	if ((baseA < 2) || (baseB < 2) || (precisionB < 1) || (digits == null)) {
+    		return null;
+    	}
+    	
+    	// If digits[i] < 0 or digits[i] >= baseA for any i, return null
+    	int inputDigitsLength = digits.length;
+    	for (int k = 0; k < inputDigitsLength; k = k + 1) {
+    		if ((digits[k] < 0) || (digits[k] >= baseA)) {
+    			return null;
+    		}
+    	}
+    	
+    	long[] opDigits = new long[inputDigitsLength];
+    	int opDigitsLength = inputDigitsLength;
+    	for (int t = 0; t < inputDigitsLength; t = t + 1) {
+    		opDigits[t] = (long) digits[t];
+    	}
+    	
+    	int[] outputArray = new int[precisionB];
+    	
+    	for (int i = 0; i < precisionB; i = i + 1) {
+    		long carry = 0;
+    		for (int j = opDigitsLength - 1; j >= 0; j = j - 1) {
+    			long x = (opDigits[j] * baseB) + carry;
+    			opDigits[j] = x % baseA;
+    			carry = x / baseA;
+    		}
+    		outputArray[i] = (int) carry;
+    	}
+        return outputArray;
     }
 }
