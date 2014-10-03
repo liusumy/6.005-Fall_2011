@@ -1,5 +1,8 @@
 package piwords;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PiGenerator {
     /**
      * Returns precision hexadecimal digits of the fractional part of pi.
@@ -12,8 +15,17 @@ public class PiGenerator {
      * @return precision digits of pi in hexadecimal.
      */
     public static int[] computePiInHex(int precision) {
-        // TODO: Implement (Problem 1.d)
-        return new int[0];
+    	if (precision < 0) {
+    		return null;
+    	} else if (precision == 0) {
+    		return null;
+    	} else {
+    		int[] piDigSeq = new int[precision];
+    		for (int i = 0; i < precision; i = i + 1) {
+    			piDigSeq[i] = piDigit(i+1);
+    		}
+    		return piDigSeq;
+    	}
     }
 
     /**
@@ -27,8 +39,31 @@ public class PiGenerator {
      * @return a^b mod m
      */
     public static int powerMod(int a, int b, int m) {
-        // TODO: Implement (Problem 1.b)
-        return -1;
+    	if ((a < 0) || (b < 0) || (m < 0)) {
+        	return -1;
+        } else if (m == 0) {
+        	throw new ArithmeticException("powerMod: m can not equals to zero.");
+        } else if (a == 0) {
+        	return 0;
+        } else if (b == 0) {
+        	return 1 % m;
+        } else if (isEven(b)) {
+        	return (square(powerMod(a, b/2, m))) % m;
+        } else {
+        	return (a * powerMod(a, (b - 1), m)) % m;
+        }
+    }
+    
+    private static boolean isEven(int x) {
+    	if ((x % 2) == 0) {
+    		return true;
+    	} else {
+    		return false;
+    	}
+    }
+    
+    private static int square(int x) {
+    	return x * x;
     }
     
     /**
