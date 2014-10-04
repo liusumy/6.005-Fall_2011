@@ -18,7 +18,27 @@ public class DigitsToStringConverter {
      */
     public static String convertDigitsToString(int[] digits, int base,
                                                char[] alphabet) {
-        // TODO: Implement (Problem 3.b)
-        return "";
+    	if (base < 2) {
+    		return null;
+    	} else if (alphabet.length != base) {
+    		return null;
+    	} else {
+    		int digitSeqLength = digits.length;
+    		for (int i = 0; i < digitSeqLength; i = i + 1) {
+    			if ((digits[i] >= base) || (digits[i] < 0)) {
+    				return null;
+    			}
+    		}
+    		char[] encodedAlphabetSeq = new char[digitSeqLength];
+    		for (int j = 0; j < digitSeqLength; j = j + 1) {
+    			encodedAlphabetSeq[j] = alphabet[digits[j]];
+    		}
+    		
+    		// Be careful!
+    		// Don't write it as "return encodedAlphabetSeq.toString();",
+    		// which returns a string in format "[x, y, z ...]", rather than
+    		// "xyz..." we want.
+    		return new String(encodedAlphabetSeq);
+    	}
     }
 }
