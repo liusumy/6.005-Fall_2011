@@ -8,7 +8,8 @@ import music.Pitch;
 public class PianoMachine {
 	
 	private Midi midi;
-    
+	private midi.Instrument instrument = Midi.DEFAULT_INSTRUMENT;
+	
 	/**
 	 * constructor for PianoMachine.
 	 * 
@@ -29,7 +30,7 @@ public class PianoMachine {
      * @param rawPitch: the frequency of a musical note
      */
     public void beginNote(Pitch rawPitch) {
-    	midi.beginNote(rawPitch.toMidiFrequency());
+    	midi.beginNote(rawPitch.toMidiFrequency(), instrument);
     }
     
     /**
@@ -37,13 +38,17 @@ public class PianoMachine {
      * @param rawPitch: the frequency of a musical note
      */
     public void endNote(Pitch rawPitch) {
-    	midi.endNote(rawPitch.toMidiFrequency());
+    	midi.endNote(rawPitch.toMidiFrequency(), instrument);
     }
-
     
-    //TODO write method spec
+    /**
+     * Switch the instrument mode to the next instrument among list
+     * of musical instruments. If the current instrument is the last
+     * one in the musical instrument list, switch back to the first
+     * instrument.
+     */
     public void changeInstrument() {
-       	//TODO: implement for question 2
+    	instrument = instrument.next();
     }
     
     //TODO write method spec

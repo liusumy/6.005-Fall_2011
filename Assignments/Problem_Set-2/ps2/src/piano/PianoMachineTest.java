@@ -93,4 +93,68 @@ public class PianoMachineTest {
     	assertEquals(expected1, midi.history());
     }
     
+    @Test
+    public void switchToBrightPianoTest() throws MidiUnavailableException {
+    	String expected2 = "on(61,BRIGHT_PIANO) wait(100) off(61,BRIGHT_PIANO)";
+    	
+    	Midi midi = Midi.getInstance();
+    	
+        pm.changeInstrument();
+        midi.clearHistory();
+        
+        pm.beginNote(new Pitch(1));
+		Midi.wait(100);
+		pm.endNote(new Pitch(1));
+		
+		System.out.println(midi.history());
+        assertEquals(expected2, midi.history());
+    }
+    
+    @Test
+    public void switchToElectricGrandTest() throws MidiUnavailableException {
+    	String expected3 = "on(61,ELECTRIC_GRAND) wait(100) off(61,ELECTRIC_GRAND)";
+    	
+    	Midi midi = Midi.getInstance();
+    	
+        pm.changeInstrument();
+        pm.changeInstrument();
+        midi.clearHistory();
+        
+        pm.beginNote(new Pitch(1));
+		Midi.wait(100);
+		pm.endNote(new Pitch(1));
+		
+		System.out.println(midi.history());
+        assertEquals(expected3, midi.history());
+    }
+    
+    @Test
+    public void switchToMusicBoxTest() throws MidiUnavailableException {
+    	String expected4 = "on(61,MUSIC_BOX) wait(100) off(61,MUSIC_BOX)";
+    	
+    	Midi midi = Midi.getInstance();
+    	
+    	// switch continuously for 10 times, until the instrument
+    	// change to MUSICAL_BOX
+    	
+        pm.changeInstrument();
+        pm.changeInstrument();
+        pm.changeInstrument();
+        pm.changeInstrument();
+        pm.changeInstrument();
+        pm.changeInstrument();
+        pm.changeInstrument();
+        pm.changeInstrument();
+        pm.changeInstrument();
+        pm.changeInstrument();
+        
+        midi.clearHistory();
+        
+        pm.beginNote(new Pitch(1));
+		Midi.wait(100);
+		pm.endNote(new Pitch(1));
+		
+		System.out.println(midi.history());
+        assertEquals(expected4, midi.history());
+    }
 }
