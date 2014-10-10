@@ -24,18 +24,22 @@ public class PianoMachine {
         }
     }
     
-    //TODO write method spec
+    /**
+     * Turn an note event associated with the specified pitch.
+     * @param rawPitch: the frequency of a musical note
+     */
     public void beginNote(Pitch rawPitch) {
-    	midi.beginNote(new Pitch(0).toMidiFrequency());
-    	//TODO implement for question 1
-
+    	midi.beginNote(rawPitch.toMidiFrequency());
     }
     
-    //TODO write method spec
+    /**
+     * Turn off an note event associated with the specified pitch.
+     * @param rawPitch: the frequency of a musical note
+     */
     public void endNote(Pitch rawPitch) {
-    	midi.endNote(new Pitch(0).toMidiFrequency());
-    	//TODO implement for question 1
+    	midi.endNote(rawPitch.toMidiFrequency());
     }
+
     
     //TODO write method spec
     public void changeInstrument() {
