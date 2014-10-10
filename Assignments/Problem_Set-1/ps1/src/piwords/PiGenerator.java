@@ -1,8 +1,5 @@
 package piwords;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class PiGenerator {
     /**
      * Returns precision hexadecimal digits of the fractional part of pi.

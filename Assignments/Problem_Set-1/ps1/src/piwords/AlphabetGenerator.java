@@ -68,14 +68,14 @@ public class AlphabetGenerator {
     			Map<Character, Integer> alphabetOccurrenceMap = new TreeMap<Character, Integer>();
     			alphabetOccurrenceMap = countAlphabetOccurrenceInStringArray(trainingData);
     			
-    			int totalAmountOfAlphabet = mapSumValue(alphabetOccurrenceMap);
     			Map<Character, Double> alphabetPDFMap = new TreeMap<Character, Double>();
     			alphabetPDFMap = computeAlphabetPDFMap(alphabetOccurrenceMap);
     			
     			Map<Character, Double> alphabetCDFMap = new TreeMap<Character, Double>();
     			alphabetCDFMap = computeAlphabetCDFMap(alphabetPDFMap);
     			
-    			Map<Character, Integer> alphabetDistribution = computeAlphabetCumulativeDistributionMap(base, alphabetCDFMap);
+    			Map<Character, Integer> alphabetDistribution =
+    					computeAlphabetCumulativeDistributionMap(base, alphabetCDFMap);
     			
     			char[] outputAlphabets = new char[base];
     			outputAlphabets = generateOutputAlphabets(base, alphabetDistribution);
