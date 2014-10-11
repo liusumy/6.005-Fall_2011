@@ -157,4 +157,172 @@ public class PianoMachineTest {
 		System.out.println(midi.history());
         assertEquals(expected4, midi.history());
     }
+    
+    @Test
+    public void shiftUpByOneOctaveTest() throws MidiUnavailableException {
+    	String expected0 = "on(72,PIANO) wait(100) off(72,PIANO)";
+    	String expected1 = "on(83,PIANO) wait(100) off(83,PIANO)";
+    	
+    	Midi midi = Midi.getInstance();
+    	
+    	pm.shiftUp();
+    	midi.clearHistory();
+    	
+        pm.beginNote(new Pitch(0));
+		Midi.wait(100);
+		pm.endNote(new Pitch(0));
+    	
+		System.out.println(midi.history());
+        assertEquals(expected0, midi.history());
+        
+        midi.clearHistory();
+        
+        pm.beginNote(new Pitch(11));
+		Midi.wait(100);
+		pm.endNote(new Pitch(11));
+		
+		System.out.println(midi.history());
+        assertEquals(expected1, midi.history());
+    }
+    
+    @Test
+    public void shiftUpByTwoOctavesTest() throws MidiUnavailableException {
+    	String expected0 = "on(84,PIANO) wait(100) off(84,PIANO)";
+    	String expected1 = "on(95,PIANO) wait(100) off(95,PIANO)";
+    	
+    	Midi midi = Midi.getInstance();
+    	
+    	pm.shiftUp();
+    	pm.shiftUp();
+    	midi.clearHistory();
+    	
+        pm.beginNote(new Pitch(0));
+		Midi.wait(100);
+		pm.endNote(new Pitch(0));
+    	
+		System.out.println(midi.history());
+        assertEquals(expected0, midi.history());
+        
+        midi.clearHistory();
+        
+        pm.beginNote(new Pitch(11));
+		Midi.wait(100);
+		pm.endNote(new Pitch(11));
+		
+		System.out.println(midi.history());
+        assertEquals(expected1, midi.history());;
+    }
+    
+    @Test
+    public void shiftUpBoundaryTest() throws MidiUnavailableException {
+    	String expected0 = "on(84,PIANO) wait(100) off(84,PIANO)";
+    	String expected1 = "on(95,PIANO) wait(100) off(95,PIANO)";
+    	
+    	Midi midi = Midi.getInstance();
+    	
+    	pm.shiftUp();
+    	pm.shiftUp();
+    	pm.shiftUp();
+    	midi.clearHistory();
+    	
+        pm.beginNote(new Pitch(0));
+		Midi.wait(100);
+		pm.endNote(new Pitch(0));
+    	
+		System.out.println(midi.history());
+        assertEquals(expected0, midi.history());
+        
+        midi.clearHistory();
+        
+        pm.beginNote(new Pitch(11));
+		Midi.wait(100);
+		pm.endNote(new Pitch(11));
+		
+		System.out.println(midi.history());
+        assertEquals(expected1, midi.history());;
+    }
+    
+    @Test
+    public void shiftDownByOneOctaveTest() throws MidiUnavailableException {
+    	String expected0 = "on(48,PIANO) wait(100) off(48,PIANO)";
+    	String expected1 = "on(59,PIANO) wait(100) off(59,PIANO)";
+    	
+    	Midi midi = Midi.getInstance();
+    	
+    	pm.shiftDown();
+    	midi.clearHistory();
+    	
+        pm.beginNote(new Pitch(0));
+		Midi.wait(100);
+		pm.endNote(new Pitch(0));
+    	
+		System.out.println(midi.history());
+        assertEquals(expected0, midi.history());
+        
+        midi.clearHistory();
+        
+        pm.beginNote(new Pitch(11));
+		Midi.wait(100);
+		pm.endNote(new Pitch(11));
+		
+		System.out.println(midi.history());
+        assertEquals(expected1, midi.history());
+    }
+    
+    @Test
+    public void shiftDownByTwoOctavesTest() throws MidiUnavailableException {
+    	String expected0 = "on(36,PIANO) wait(100) off(36,PIANO)";
+    	String expected1 = "on(47,PIANO) wait(100) off(47,PIANO)";
+    	
+    	Midi midi = Midi.getInstance();
+    	
+    	pm.shiftDown();
+    	pm.shiftDown();
+    	midi.clearHistory();
+    	
+        pm.beginNote(new Pitch(0));
+		Midi.wait(100);
+		pm.endNote(new Pitch(0));
+    	
+		System.out.println(midi.history());
+        assertEquals(expected0, midi.history());
+        
+        midi.clearHistory();
+        
+        pm.beginNote(new Pitch(11));
+		Midi.wait(100);
+		pm.endNote(new Pitch(11));
+		
+		System.out.println(midi.history());
+        assertEquals(expected1, midi.history());;
+    }
+    
+    @Test
+    public void shiftDownBoundaryTest() throws MidiUnavailableException {
+    	String expected0 = "on(36,PIANO) wait(100) off(36,PIANO)";
+    	String expected1 = "on(47,PIANO) wait(100) off(47,PIANO)";
+    	
+    	Midi midi = Midi.getInstance();
+    	
+    	pm.shiftDown();
+    	pm.shiftDown();
+    	pm.shiftDown();
+    	midi.clearHistory();
+    	
+        pm.beginNote(new Pitch(0));
+		Midi.wait(100);
+		pm.endNote(new Pitch(0));
+    	
+		System.out.println(midi.history());
+        assertEquals(expected0, midi.history());
+        
+        midi.clearHistory();
+        
+        pm.beginNote(new Pitch(11));
+		Midi.wait(100);
+		pm.endNote(new Pitch(11));
+		
+		System.out.println(midi.history());
+        assertEquals(expected1, midi.history());;
+    }
 }
