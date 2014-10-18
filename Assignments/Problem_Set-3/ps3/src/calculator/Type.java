@@ -3,6 +3,7 @@ package calculator;
 /*
  * Legitimate tokens for a calculator parser:
  * 
+ * 	EOF		(end of input)
  * 	'6', '6.25', ... (any positive number)
  * 	'pt'	(point)
  * 	'in'	(inch)
@@ -17,7 +18,8 @@ package calculator;
 /**
  * Token types:
  * 
- * 	SCALAR,			// any positive number
+ * 	EOF,			// end of input
+ * 	NUMBER,			// any positive number
  * 	POINT, 			// unit 'pt'
  *	INCH,			// unit 'in'
  *	PLUS,			// arithmetic operator '+'
@@ -29,7 +31,8 @@ package calculator;
  *
  */
 enum Type {
-	SCALAR,
+	EOF,
+	NUMBER,
 	POINT,
 	INCH,
 	PLUS,
@@ -37,5 +40,5 @@ enum Type {
 	MULTIPLY,
 	DIVIDE,
 	OPEN_PAREN,
-	CLOSE_PAREN,
+	CLOSE_PAREN
 }
