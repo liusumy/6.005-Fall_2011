@@ -68,7 +68,7 @@ public class Sudoku {
      * 
      * @param dim
      *            dimension of puzzle Requires that dim*dim == square.length ==
-     *            square[i].length for 0<=i<dim.
+     *            square[i].length for 0<=i<(dim^2 - 1).
      */
     public Sudoku(int dim, int[][] square) {
         // TODO: implement this.
