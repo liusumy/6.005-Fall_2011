@@ -190,7 +190,6 @@ public class Sudoku {
     private static char[][] convertStringToCharMatrix(String text) {
     	String[] lines = text.split("\\n");
     	int size = lines.length;
-    	// System.out.println("lines: " + size);
     	char[][] charMatrix = new char[size][size];
     	for (int i = 0; i < size; i = i + 1) {
     		for (int j = 0; j < size; j = j + 1) {
