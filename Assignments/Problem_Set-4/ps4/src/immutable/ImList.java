@@ -45,7 +45,8 @@ public interface ImList<E> extends Iterable<E> {
 
     /**
      * @requires e != null
-     * @return exists i such that e_i.equals(e) where e_i is ith element of this
+     * @return true if there exists i such that e_i.equals(e) where e_i is
+     * 		   ith element of this
      */
     public boolean contains(E e);
 

@@ -6,16 +6,21 @@
  */
 package sat.formula;
 
+import immutable.EmptyImList;
 import immutable.ImList;
+import immutable.NonEmptyImList;
 
 import java.util.Iterator;
-
-import sat.env.Variable;
 
 /**
  * Formula represents an immutable boolean formula in
  * conjunctive normal form, intended to be solved by a
  * SAT solver.
+ * 
+ * Datatype expression:
+ * 		Formula = ImList<Clause>			// a list of clauses ANDed together
+ * 		Clause	= ImList<Literal>			// a list of literals ORed together
+ * 		Literal = PosLiteral(val: String) + NegLiteral(val: String)
  */
 public class Formula {
     private final ImList<Clause> clauses;
@@ -38,6 +43,11 @@ public class Formula {
     void checkRep() {
         assert this.clauses != null : "SATProblem, Rep invariant: clauses non-null";
     }
+    
+    private Formula(ImList<Clause> clauses) {
+        this.clauses = clauses;
+        checkRep();
+    }
 
     /**
      * Create a new problem for solving that contains no clauses (that is the
@@ -46,9 +56,8 @@ public class Formula {
      * @return the true problem
      */
     public Formula() {
-
-        // TODO: implement this.
-        throw new RuntimeException("not yet implemented.");
+    	clauses = new EmptyImList<Clause> ();
+    	checkRep();
     }
 
     /**
@@ -57,9 +66,10 @@ public class Formula {
      * 
      * @return the problem with a single clause containing the literal l
      */
-    public Formula(Variable l) {
-        // TODO: implement this.
-        throw new RuntimeException("not yet implemented.");
+    public Formula(Literal l) {
+    	Clause c = new Clause(l);
+    	clauses = new NonEmptyImList<Clause>(c);
+    	checkRep();
     }
 
     /**
@@ -68,18 +78,17 @@ public class Formula {
      * @return the problem with a single clause c
      */
     public Formula(Clause c) {
-        // TODO: implement this.
-        throw new RuntimeException("not yet implemented.");
+    	clauses = new NonEmptyImList<Clause>(c);
+    	checkRep();
     }
-
+    
     /**
      * Add a clause to this problem
      * 
      * @return a new problem with the clauses of this, but c added
      */
     public Formula addClause(Clause c) {
-        // TODO: implement this.
-        throw new RuntimeException("not yet implemented.");
+        return new Formula(clauses.add(c));
     }
 
     /**
@@ -88,8 +97,7 @@ public class Formula {
      * @return list of clauses
      */
     public ImList<Clause> getClauses() {
-        // TODO: implement this.
-        throw new RuntimeException("not yet implemented.");
+        return this.clauses;
     }
 
     /**
@@ -99,34 +107,69 @@ public class Formula {
      *         order
      */
     public Iterator<Clause> iterator() {
-        // TODO: implement this.
-        throw new RuntimeException("not yet implemented.");
+        return clauses.iterator();
     }
 
     /**
      * @return a new problem corresponding to the conjunction of this and p
      */
     public Formula and(Formula p) {
-        // TODO: implement this.
-        throw new RuntimeException("not yet implemented.");
+        Formula result = this;
+        // iterator for clauses in formula p
+        Iterator<Clause> pIter = p.iterator();
+        while (pIter.hasNext()) {
+        	result = result.addClause(pIter.next());
+        }
+        return result;
     }
 
     /**
      * @return a new problem corresponding to the disjunction of this and p
      */
     public Formula or(Formula p) {
-        // TODO: implement this.
         // Hint: you'll need to use the distributive law to preserve conjunctive normal form, i.e.:
         //   to do (a & b) .or (c & d),
-        //   you'll need to make (a | b) & (a | c) & (b | c) & (b | d)        
-        throw new RuntimeException("not yet implemented.");
+        //   you'll need to make (a | c) & (b | c) & (a | d) & (b | d)        
+        Formula result = new Formula();
+        if (clauses.isEmpty()) {
+        	result = p;
+        } else if (p.getClauses().isEmpty()) {
+        	result = this;
+        } else {
+        	// iterator for clauses in formula p
+        	Iterator<Clause> pIter = p.iterator();
+        	while (pIter.hasNext()) {
+        		// the clause in formula p which the iterator currently encounters
+        		Clause pc = pIter.next();
+        		// obtain the disjunction of this formula and pc
+        		Formula f = getFCDisjunct(this, pc);
+        		result = result.and(f);
+        	}
+        }
+        return result;
+    }
+    
+    // Return the disjunction of a formula and a clause, i.e.:
+    //   getFCDisj((a & b), c) => (a | c) & (b | c)
+    private Formula getFCDisjunct(Formula f, Clause c) {
+    	Formula result = new Formula();
+    	if (f.getClauses().isEmpty()) {
+    		result = new Formula(c);
+    	} else {
+    		// iterator for clauses in formula f
+    		Iterator<Clause> fIter = f.iterator();
+    		while (fIter.hasNext()) {
+    			Clause clause = fIter.next().merge(c);
+    			result = result.addClause(clause);
+    		}
+    	}
+    	return result;
     }
 
     /**
      * @return a new problem corresponding to the negation of this
      */
     public Formula not() {
-        // TODO: implement this.
         // Hint: you'll need to apply DeMorgan's Laws (http://en.wikipedia.org/wiki/De_Morgan's_laws)
         // to move the negation down to the literals, and the distributive law to preserve 
         // conjunctive normal form, i.e.:
@@ -134,7 +177,26 @@ public class Formula {
         //   you'll need to make !((a | b) & c) 
         //                       => (!a & !b) | !c            (moving negation down to the literals)
         //                       => (!a | !c) & (!b | !c)    (conjunctive normal form)
-        throw new RuntimeException("not yet implemented.");
+    	Formula result = new Formula();
+    	Iterator<Clause> tIter = this.iterator();
+    	while (tIter.hasNext()) {
+    		Clause c = tIter.next();
+    		Formula f = negateClause(c);
+    		result = result.or(f);
+    	}
+    	return result;
+    }
+    
+    // Return the negation of a clause, which by DeMorgan's Laws, is a formula
+    private Formula negateClause(Clause clause) {
+    	Formula result = new Formula();
+    	Iterator<Literal> cIter = clause.iterator();
+    	while (cIter.hasNext()) {
+    		Literal l = cIter.next();
+    		Literal nl = l.getNegation();
+    		result = result.addClause(new Clause(nl));
+    	}
+    	return result;
     }
 
     /**
@@ -142,8 +204,7 @@ public class Formula {
      * @return number of clauses in this
      */
     public int getSize() {
-        // TODO: implement this.
-        throw new RuntimeException("not yet implemented.");
+        return clauses.size();
     }
 
     /**
