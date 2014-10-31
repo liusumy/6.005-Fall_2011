@@ -67,7 +67,7 @@ public class FormulaTest {
     @Test
     public void testSingleClauseFormula001() {
     	Literal l = PosLiteral.make("l");
-    	Clause c = make(l);
+    	Clause c = makeClause(l);
     	Formula f = new Formula(c);
     	assertEquals(f.getSize(), 1);
     	assertEquals(f.getClauses().first(), c);
@@ -80,7 +80,7 @@ public class FormulaTest {
     public void testSingleClauseFormula002() {
     	Literal l1 = PosLiteral.make("l1");
     	Literal l2 = PosLiteral.make("l2");
-    	Clause c = make(l1, l2);
+    	Clause c = makeClause(l1, l2);
     	Formula f = new Formula(c);
     	assertEquals(f.getSize(), 1);
     	assertEquals(f.getClauses().first(), c);
@@ -90,7 +90,7 @@ public class FormulaTest {
     @Test
     public void testAddClause001() {
     	Formula ef = new Formula();		// an empty formula
-    	Clause ec = make();				// an empty clause
+    	Clause ec = makeClause();				// an empty clause
     	assertEquals(ef.getSize(), 0);
     	assertTrue(ef.getClauses().isEmpty());
     	
@@ -106,7 +106,7 @@ public class FormulaTest {
     	Formula ef = new Formula();
     	Literal l1 = PosLiteral.make("l1");
     	Literal l2 = PosLiteral.make("l2");
-    	Clause nec = make(l1, l2);			// a non-empty clause
+    	Clause nec = makeClause(l1, l2);			// a non-empty clause
     	assertEquals(ef.getSize(), 0);
     	assertTrue(ef.getClauses().isEmpty());
     	
@@ -121,7 +121,7 @@ public class FormulaTest {
     public void testAddClause003() {
     	Literal l1 = PosLiteral.make("l1");
     	Literal l2 = PosLiteral.make("l2");
-    	Clause nec = make(l1, l2);
+    	Clause nec = makeClause(l1, l2);
     	Formula snecf = new Formula(nec);
     	assertEquals(snecf.getSize(), 1);
     	assertEquals(snecf.getClauses().first(), nec);
@@ -129,7 +129,7 @@ public class FormulaTest {
     	
     	// add an empty clause to the single non-empty clause
     	// formula
-    	Clause ec = make();
+    	Clause ec = makeClause();
     	Formula tcf = snecf.addClause(ec);	// a two-clause formula
     	assertEquals(tcf.getSize(), 2);
     	assertEquals(tcf.getClauses().first(), ec);
@@ -141,7 +141,7 @@ public class FormulaTest {
     public void testAddClause004() {
     	Literal l1 = PosLiteral.make("l1");
     	Literal l2 = PosLiteral.make("l2");
-    	Clause nec1 = make(l1, l2);
+    	Clause nec1 = makeClause(l1, l2);
     	Formula snecf = new Formula(nec1);
     	assertEquals(snecf.getSize(), 1);
     	assertEquals(snecf.getClauses().first(), nec1);
@@ -151,7 +151,7 @@ public class FormulaTest {
     	// formula
     	Literal l3 = PosLiteral.make("l3");
     	Literal l4 = PosLiteral.make("l4");
-    	Clause nec2 = make(l3, l4);
+    	Clause nec2 = makeClause(l3, l4);
     	Formula tcf = snecf.addClause(nec2);
     	assertEquals(tcf.getSize(), 2);
     	assertEquals(tcf.getClauses().first(), nec2);
@@ -169,7 +169,7 @@ public class FormulaTest {
     @Test
     public void testGetClauses002() {
     	Literal l = PosLiteral.make("l");
-    	Clause c = make(l);
+    	Clause c = makeClause(l);
     	Formula f = new Formula(c);
     	assertEquals(f.getSize(), 1);
     	assertEquals(f.getClauses().first(), c);
@@ -180,21 +180,21 @@ public class FormulaTest {
     public void testGetClauses003() {
     	Literal l1 = PosLiteral.make("l1");
     	Literal l2 = PosLiteral.make("l2");
-    	Clause nec1 = make(l1, l2);
-    	Formula snecf = new Formula(nec1);
+    	Clause c1 = makeClause(l1, l2);
+    	Formula snecf = new Formula(c1);
     	assertEquals(snecf.getSize(), 1);
-    	assertEquals(snecf.getClauses().first(), nec1);
+    	assertEquals(snecf.getClauses().first(), c1);
     	assertTrue(snecf.getClauses().rest().isEmpty());
     	
     	// add an non-empty clause to the single non-empty clause
     	// formula
     	Literal l3 = PosLiteral.make("l3");
     	Literal l4 = PosLiteral.make("l4");
-    	Clause nec2 = make(l3, l4);
-    	Formula tcf = snecf.addClause(nec2);
+    	Clause c2 = makeClause(l3, l4);
+    	Formula tcf = snecf.addClause(c2);
     	assertEquals(tcf.getSize(), 2);
-    	assertEquals(tcf.getClauses().first(), nec2);
-    	assertEquals(tcf.getClauses().rest().first(), nec1);
+    	assertEquals(tcf.getClauses().first(), c2);
+    	assertEquals(tcf.getClauses().rest().first(), c1);
     	assertTrue(tcf.getClauses().rest().rest().isEmpty());
     }
     
@@ -208,7 +208,7 @@ public class FormulaTest {
     @Test
     public void testIterator002() {
     	Literal l = PosLiteral.make("l");
-    	Clause c = make(l);
+    	Clause c = makeClause(l);
     	Formula f = new Formula(c);
     	Iterator<Clause> iter = f.iterator();
     	assertTrue(iter.hasNext());
@@ -220,21 +220,17 @@ public class FormulaTest {
     public void testIterator003() {
     	Literal l1 = PosLiteral.make("l1");
     	Literal l2 = PosLiteral.make("l2");
-    	Clause nec1 = make(l1, l2);
-    	Formula snecf = new Formula(nec1);
-    	
-    	// add an non-empty clause to the single non-empty clause
-    	// formula
     	Literal l3 = PosLiteral.make("l3");
     	Literal l4 = PosLiteral.make("l4");
-    	Clause nec2 = make(l3, l4);
-    	Formula tcf = snecf.addClause(nec2);
+    	Clause c1 = makeClause(l1, l2);
+    	Clause c2 = makeClause(l3, l4);
+    	Formula f = makeFormula(c1, c2);
     	
-    	Iterator<Clause> iter = tcf.iterator();
+    	Iterator<Clause> iter = f.iterator();
     	assertTrue(iter.hasNext());
-    	assertEquals(iter.next(), nec2);
+    	assertEquals(iter.next(), c2);
     	assertTrue(iter.hasNext());
-    	assertEquals(iter.next(), nec1);
+    	assertEquals(iter.next(), c1);
     	assertFalse(iter.hasNext());
     }
     
@@ -252,7 +248,7 @@ public class FormulaTest {
     	Formula ef = new Formula();
     	Literal a = PosLiteral.make("a");
     	Literal b = PosLiteral.make("b");
-    	Clause nec = make(a, b);
+    	Clause nec = makeClause(a, b);
     	Formula snecf = new Formula(nec);
     	Formula efAndSnecf = ef.and(snecf);
     	assertEquals(efAndSnecf.getSize(), 1);
@@ -264,7 +260,7 @@ public class FormulaTest {
     public void testAnd003() {
     	Literal a = PosLiteral.make("a");
     	Literal b = PosLiteral.make("b");
-    	Clause nec = make(a, b);
+    	Clause nec = makeClause(a, b);
     	Formula snecf = new Formula(nec);
     	Formula ef = new Formula();
     	Formula snecfAndEf = snecf.and(ef);
@@ -279,8 +275,8 @@ public class FormulaTest {
     	Literal b = PosLiteral.make("b");
     	Literal c = PosLiteral.make("c");
     	Literal d = PosLiteral.make("d");
-    	Clause nec1 = make(a, b);
-    	Clause nec2 = make(c, d);
+    	Clause nec1 = makeClause(a, b);
+    	Clause nec2 = makeClause(c, d);
     	Formula snecf1 = new Formula(nec1);
     	Formula snecf2 = new Formula(nec2);
     	Formula snecf1AndSnecf2 = snecf1.and(snecf2);
@@ -304,7 +300,7 @@ public class FormulaTest {
     	Formula ef = new Formula();
     	Literal a = PosLiteral.make("a");
     	Literal b = PosLiteral.make("b");
-    	Clause nec = make(a, b);
+    	Clause nec = makeClause(a, b);
     	Formula snecf = new Formula(nec);
     	Formula efOrSnecf = ef.or(snecf);
     	assertEquals(efOrSnecf.getSize(), 1);
@@ -316,7 +312,7 @@ public class FormulaTest {
     public void testOr003() {
     	Literal a = PosLiteral.make("a");
     	Literal b = PosLiteral.make("b");
-    	Clause nec = make(a, b);
+    	Clause nec = makeClause(a, b);
     	Formula snecf = new Formula(nec);
     	Formula ef = new Formula();
     	Formula snecfOrEf = snecf.or(ef);
@@ -331,12 +327,12 @@ public class FormulaTest {
     	Literal b = PosLiteral.make("b");
     	Literal c = PosLiteral.make("c");
     	Literal d = PosLiteral.make("d");
-    	Clause ca = make(a);
-    	Clause cb = make(b);
-    	Clause cc = make(c);
-    	Clause cd = make(d);
-    	Formula f1 = new Formula(ca).addClause(cb);
-    	Formula f2 = new Formula(cc).addClause(cd);
+    	Clause ca = makeClause(a);
+    	Clause cb = makeClause(b);
+    	Clause cc = makeClause(c);
+    	Clause cd = makeClause(d);
+    	Formula f1 = makeFormula(ca, cb);
+    	Formula f2 = makeFormula(cc, cd);
     	Formula f1OrF2 = f1.or(f2);
     	
     	// (a & b) .or (c & d) == (b | c) & (a | c) & (b | d) & (a | d)
@@ -345,10 +341,10 @@ public class FormulaTest {
     	Clause secondClause = f1OrF2.getClauses().rest().first();
     	Clause thirdClause = f1OrF2.getClauses().rest().rest().first();
     	Clause lastClause = f1OrF2.getClauses().rest().rest().rest().first();
-    	assertEquals(firstClause, make(b, c));
-    	assertEquals(secondClause, make(a, c));
-    	assertEquals(thirdClause, make(b, d));
-    	assertEquals(lastClause, make(a, d));
+    	assertEquals(firstClause, makeClause(b, c));
+    	assertEquals(secondClause, makeClause(a, c));
+    	assertEquals(thirdClause, makeClause(b, d));
+    	assertEquals(lastClause, makeClause(a, d));
     	assertTrue(f1OrF2.getClauses().rest().rest().rest().rest().isEmpty());
     }
     
@@ -360,16 +356,16 @@ public class FormulaTest {
     	Literal na = a.getNegation();
     	Literal nb = b.getNegation();
     	Literal nc = c.getNegation();
-    	Clause aOrB = make(a, b);
-    	Clause cc = make(c);
-    	Formula f = new Formula(aOrB).addClause(cc);	// f = ((a | b) & c)
+    	Clause aOrB = makeClause(a, b);
+    	Clause cc = makeClause(c);
+    	Formula f = makeFormula(aOrB, cc);	// f = ((a | b) & c)
     	
         // !((a | b) & c) 
         // => (!b & !a) | !c            (moving negation down to the literals)
         // => (!b | !c) & (!a | !c)     (conjunctive normal form)
     	Formula nf = f.not();
-    	Clause ec1 = make(na, nc);
-    	Clause ec2 = make(nb, nc);
+    	Clause ec1 = makeClause(na, nc);
+    	Clause ec2 = makeClause(nb, nc);
     	assertEquals(nf.getSize(), 2);
     	assertEquals(nf.getClauses().first(), ec2);
     	assertEquals(nf.getClauses().rest().first(), ec1);
@@ -397,8 +393,8 @@ public class FormulaTest {
     	Literal b = PosLiteral.make("b");
     	Literal c = PosLiteral.make("c");
     	Literal d = PosLiteral.make("d");
-    	Clause nec1 = make(a, b);
-    	Clause nec2 = make(c, d);
+    	Clause nec1 = makeClause(a, b);
+    	Clause nec2 = makeClause(c, d);
     	Formula snecf1 = new Formula(nec1);
     	Formula snecf2 = new Formula(nec2);
     	Formula snecf1AndSnecf2 = snecf1.and(snecf2);
@@ -427,7 +423,7 @@ public class FormulaTest {
     @Test
     public void testToString003() {
     	Literal l = PosLiteral.make("l");
-    	Clause c = make(l);
+    	Clause c = makeClause(l);
     	Formula f = new Formula(c);
     	String es = "Problem[" + "\n" + c.toString() + "]";
     	assertEquals(f.toString(), es);
@@ -437,10 +433,23 @@ public class FormulaTest {
     public void testToString004() {
     	Literal l1 = PosLiteral.make("l1");
     	Literal l2 = PosLiteral.make("l2");
-    	Clause c = make(l1, l2);
+    	Clause c = makeClause(l1, l2);
     	Formula f = new Formula(c);
     	String es = "Problem[" + "\n" + c.toString() + "]";
     	assertEquals(f.toString(), es);
+    }
+    
+    // Helper function for constructing a formula.  Takes
+    // a variable number of arguments, e.g.
+    // makeFormula(a, b, c) will make the formula (a and b and c)
+    // @param e,...   clause in the formula
+    // @return formula containing e,...
+    private Formula makeFormula(Clause... e) {
+        Formula f = new Formula();
+        for (int i = 0; i < e.length; ++i) {
+            f = f.addClause(e[i]);
+        }
+        return f;
     }
     
     // Helper function for constructing a clause.  Takes
@@ -448,7 +457,7 @@ public class FormulaTest {
     // make(a, b, c) will make the clause (a or b or c)
     // @param e,...   literals in the clause
     // @return clause containing e,...
-    private Clause make(Literal... e) {
+    private Clause makeClause(Literal... e) {
         Clause c = new Clause();
         for (int i = 0; i < e.length; ++i) {
             c = c.add(e[i]);
