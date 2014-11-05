@@ -56,7 +56,7 @@ public class Formula {
      * @return the true problem
      */
     public Formula() {
-    	clauses = new EmptyImList<Clause> ();
+    	this.clauses = new EmptyImList<Clause> ();
     	checkRep();
     }
 
@@ -68,7 +68,7 @@ public class Formula {
      */
     public Formula(Literal l) {
     	Clause c = new Clause(l);
-    	clauses = new NonEmptyImList<Clause>(c);
+    	this.clauses = new NonEmptyImList<Clause>(c);
     	checkRep();
     }
 
@@ -88,7 +88,7 @@ public class Formula {
      * @return a new problem with the clauses of this, but c added
      */
     public Formula addClause(Clause c) {
-        return new Formula(clauses.add(c));
+        return new Formula(this.clauses.add(c));
     }
 
     /**
@@ -114,13 +114,13 @@ public class Formula {
      * @return a new problem corresponding to the conjunction of this and p
      */
     public Formula and(Formula p) {
-        Formula result = this;
+        Formula cof = this;		// conjunction of two formulas
         // iterator for clauses in formula p
         Iterator<Clause> pIter = p.iterator();
         while (pIter.hasNext()) {
-        	result = result.addClause(pIter.next());
+        	cof = cof.addClause(pIter.next());
         }
-        return result;
+        return cof;
     }
 
     /**
@@ -130,39 +130,36 @@ public class Formula {
         // Hint: you'll need to use the distributive law to preserve conjunctive normal form, i.e.:
         //   to do (a & b) .or (c & d),
         //   you'll need to make (a | c) & (b | c) & (a | d) & (b | d)        
-        Formula result = new Formula();
-        if (clauses.isEmpty()) {
-        	result = p;
+        Formula dof = new Formula();	// disjunction of two formulas
+        if (this.getClauses().isEmpty()) {
+        	dof = p;
         } else if (p.getClauses().isEmpty()) {
-        	result = this;
+        	dof = this;
         } else {
         	// iterator for clauses in formula p
         	Iterator<Clause> pIter = p.iterator();
         	while (pIter.hasNext()) {
-        		// the clause in formula p which the iterator currently encounters
         		Clause pc = pIter.next();
-        		// obtain the disjunction of this formula and pc
+        		// obtain the disjunction of this formula and pc,
+        		// which is a formula
         		Formula f = getFCDisjunct(this, pc);
-        		result = result.and(f);
+        		dof = dof.and(f);
         	}
         }
-        return result;
+        return dof;
     }
     
-    // Return the disjunction of a formula and a clause, i.e.:
+    // Return the disjunction of a formula f and a clause c, i.e.:
     //   getFCDisj((a & b), c) => (a | c) & (b | c)
+    // Requires: f is not an empty formula
     private Formula getFCDisjunct(Formula f, Clause c) {
     	Formula result = new Formula();
-    	if (f.getClauses().isEmpty()) {
-    		result = new Formula(c);
-    	} else {
-    		// iterator for clauses in formula f
-    		Iterator<Clause> fIter = f.iterator();
-    		while (fIter.hasNext()) {
-    			Clause clause = fIter.next().merge(c);
-    			result = result.addClause(clause);
-    		}
-    	}
+    	// iterator for clauses in formula f
+		Iterator<Clause> fIter = f.iterator();
+		while (fIter.hasNext()) {
+			Clause clause = fIter.next().merge(c);
+			result = result.addClause(clause);
+		}
     	return result;
     }
 
@@ -188,15 +185,15 @@ public class Formula {
     }
     
     // Return the negation of a clause, which by DeMorgan's Laws, is a formula
-    private Formula negateClause(Clause clause) {
-    	Formula result = new Formula();
-    	Iterator<Literal> cIter = clause.iterator();
+    private Formula negateClause(Clause c) {
+    	Formula f = new Formula();
+    	Iterator<Literal> cIter = c.iterator();
     	while (cIter.hasNext()) {
     		Literal l = cIter.next();
     		Literal nl = l.getNegation();
-    		result = result.addClause(new Clause(nl));
+    		f = f.addClause(new Clause(nl));
     	}
-    	return result;
+    	return f;
     }
 
     /**

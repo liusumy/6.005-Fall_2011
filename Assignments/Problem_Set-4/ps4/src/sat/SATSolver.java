@@ -44,11 +44,18 @@ public class SATSolver {
     private static Environment solve(ImList<Clause> clauses, Environment env) {
         if (clauses.isEmpty()) { // no clauses, trivially satisfiable
         	return env;
-        } else if (clauses.contains(new Clause())) {
-        	// contains empty clause, unsatisfiable, fail and backtrack
-        	return null;
         } else {
-        	Clause sc = findSmallestClauses(clauses);
+        	Clause sc = null;
+        	for (Clause c : clauses) {
+        		if (c.isEmpty()) {
+        			// contains empty clause, unsatisfiable, fail and backtrack
+        			return null;
+        		}
+        		// find the smallest clause (by number of literals)
+        		if ((sc == null) || (c.size() < sc.size())) {
+        			sc = c;
+        		}
+        	}
         	Literal l = sc.chooseLiteral();
         	Variable var = l.getVariable();
         	if (sc.isUnit()) { // encounter a unit clause, apply unit propagation
@@ -99,20 +106,5 @@ public class SATSolver {
         	}
         }
         return reducedClauses;
-    }
-    
-    /**
-     * Find out the smallest clause (by number of literals)
-     * Require: clauses is non-empty
-     * @return a clause that contains the smallest number of literals
-     */
-    private static Clause findSmallestClauses(ImList<Clause> clauses) {
-    	Clause smallest = clauses.first();
-    	for (Clause c : clauses) {
-    		if (c.size() < smallest.size()) {
-    			smallest = c;
-    		}
-    	}
-    	return smallest;
     }
 }

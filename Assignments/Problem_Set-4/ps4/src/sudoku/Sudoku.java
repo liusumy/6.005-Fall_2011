@@ -7,10 +7,14 @@
 package sudoku;
 
 import java.io.IOException;
-
+import sat.env.Bool;
 import sat.env.Environment;
 import sat.env.Variable;
+import sat.formula.Clause;
 import sat.formula.Formula;
+import sat.formula.Literal;
+import sat.formula.NegLiteral;
+import sat.formula.PosLiteral;
 import utils.FileUtils;
 
 /**
@@ -36,8 +40,10 @@ public class Sudoku {
     //			the number of rows and columns are: dim*dim
     //		(2) 2 <= dim <= 3
     //			the puzzle has at least dim of 2 and at most 3
-    //		(3) 0 <= square[i][j] <= 9
-    //			the puzzle is either filled with digits 1-9 or
+    //		(3) square != null
+    //		(4) occupies != null
+    //		(5) 0 <= square[i][j] <= size
+    //			the puzzle is either filled with digits 1~size or
     //			left blank
     //
     // Abstract Function:
@@ -67,16 +73,18 @@ public class Sudoku {
     //		
     private void checkRep() {
     	assert (this.dim * this.dim) == size :
-    		"SudokuPuzzle, Rep invariant: the number of rows and columns "
-    		+ "are: dim*dim";
+    		"Sudoku, Rep invariant: the number of rows and columns "
+    		+ "should be: "+ dim + "*" + dim;
     	assert ((this.dim >= 2) && (this.dim <= 3)) :
-    		"SudokuPuzzle, Rep invariant: the puzzle has at least dim of 2 "
+    		"Sudoku, Rep invariant: the puzzle has at least dim of 2 "
     		+ "and at most dim of 3";
+    	assert square != null : "Sudoku, Rep invariant: square non-null";
+    	assert occupies != null : "Sudoku, Rep invariant: occupies non-null";
     	for (int i = 0; i < size; i = i + 1) {
     		for (int j = 0; j < size; j = j + 1) {
-    			assert ((square[i][j] >= 0) && (square[i][j] <= 9)) :
-    	    		"SudokuPuzzle, Rep invariant: the slots are either filled "
-    	    		+ "with digits 1-9 or left blank";
+    			assert ((square[i][j] >= 0) && (square[i][j] <= size)) :
+    	    		"Sudoku, Rep invariant: the slots are either filled "
+    	    		+ "with digits 0-" + size;
     		}
     	}
     }
@@ -90,14 +98,14 @@ public class Sudoku {
      */
     public Sudoku(int dim) {
     	this.dim = dim;
-    	size = dim * dim;
-        int[][] sq = new int[size][size];
+    	this.size = dim * dim;
+    	// create a size*size Sudoku grid where each square is unoccupied
+    	this.square = new int[size][size];
         for (int i = 0; i < size; i = i + 1) {
         	for (int j = 0; j < size; j = j + 1) {
-        		sq[i][j] = 0;
+        		this.square[i][j] = 0;
         	}
         }
-        this.square = sq;
         this.occupies = initializeVariables(size);
         checkRep();
     }
@@ -123,18 +131,18 @@ public class Sudoku {
      */
     public Sudoku(int dim, int[][] square) {
         this.dim = dim;
-        size = dim * dim;
+        this.size = dim * dim;
         this.square = square;
         this.occupies = initializeVariables(size);
         checkRep();
     }
     
-    // initialize the occupies[i][j][k] variables in Sudoku's representation
+    // Create a variable for each square in the Sudoku grid
     private Variable[][][] initializeVariables(int size) {
-    	Variable[][][] vars = new Variable[size][size][size];
+    	Variable[][][] vars = new Variable[size][size][size+1];
     	for (int i = 0; i < size; i = i + 1) {
         	for (int j = 0; j < size; j = j + 1) {
-        		for (int k = 0; k < size; k = k + 1) {
+        		for (int k = 1; k < size+1; k = k + 1) {
         			Variable var = new Variable(
         					"occupies(" + i + "," + j + "," + k + ")");
         			vars[i][j][k] = var;
@@ -184,11 +192,11 @@ public class Sudoku {
     	return new Sudoku(dim, digitMatrix);
     }
     
-    // convert a string into a matrix of characters
+    // Convert a string into a matrix of characters,
     // each row in the matrix corresponds to a substring partitioned
     // by the character '\n'
     private static char[][] convertStringToCharMatrix(String text) {
-    	String[] lines = text.split("\\n");
+    	String[] lines = text.split("\n");
     	int size = lines.length;
     	char[][] charMatrix = new char[size][size];
     	for (int i = 0; i < size; i = i + 1) {
@@ -226,7 +234,6 @@ public class Sudoku {
         		if (square[i][j] == 0) {
         			sb.append('.');
         		} else {
-        			checkRep(); // assert that 1 <= square[i][j] <= 9
         			sb.append(square[i][j]);
         		}
         	}
@@ -241,9 +248,145 @@ public class Sudoku {
      *         occupies the entry in row i, column j
      */
     public Formula getProblem() {
+    	Formula foc = new Formula();	// formula of the 5 constrains
+    	
+    	
+    	// solution must be consistent with the starting grid
+    	Formula foc1 = new Formula();
+    	for (int i = 0; i < size; i = i + 1) {
+    		for (int j = 0; j < size; j = j + 1) {
+    			int k = square[i][j];
+    			if (k > 0) { // a known entry found, create a clause
+    				Variable v_ijk = occupies[i][j][k];
+    				Literal l = PosLiteral.make(v_ijk);
+    				Clause c = new Clause(l);
+    				foc1 = foc1.addClause(c);
+    			}
+    		}
+    	}
+    	
+    	
+    	// at most one digit per square
+    	Formula foc2 = new Formula();
+    	for (int i = 0; i < size; i = i + 1) {
+    		for (int j = 0; j < size; j = j + 1) {
+    			for (int k = 1; k < size+1; k = k + 1) {
+    				Variable v_ijk = occupies[i][j][k];
+    				Literal l1 = NegLiteral.make(v_ijk);
+    				for (int k2 = k + 1; k2 < size+1; k2 = k2 + 1) {
+    					Variable v_ijk2 = occupies[i][j][k2];
+    					Literal l2 = NegLiteral.make(v_ijk2);
+    					Clause c = new Clause().add(l1).add(l2);
+    					foc2 = foc2.addClause(c);
+    				}
+    			}
+    		}
+    	}
+    	
+    	
+    	// in each row, each digit must appear exactly once
+    	Formula foc3 = new Formula();
+    	
+    	for (int i = 0; i < size; i = i + 1) {
+    		for (int k = 1; k < size+1; k = k + 1) {
+    			
+    			// digit k appears AT LEAST ONCE in row i
+    			Clause c1 = new Clause();
+    			for (int j = 0; j < size; j = j + 1) {
+    				Variable v_ijk = occupies[i][j][k];
+    				Literal l = PosLiteral.make(v_ijk);
+    				c1 = c1.add(l);
+    			}
+    			foc3 = foc3.addClause(c1);
+    			
+    			// digit k appears AT MOST ONCE in row i
+    			for (int j = 0; j < size; j = j + 1) {
+    				Variable v_ijk = occupies[i][j][k];
+    				Literal l1 = NegLiteral.make(v_ijk);
+    				for (int j2 = j + 1; j2 < size; j2 = j2 + 1) {
+    					Variable v_ij2k = occupies[i][j2][k];
+    					Literal l2 = NegLiteral.make(v_ij2k);
+    					Clause c2 = new Clause(l1).add(l2);
+    					foc3 = foc3.addClause(c2);
+    				}
+    			}
+    		}
+    	}
+    	
+    	
+    	// in each column, each digit must appear exactly once
+    	Formula foc4 = new Formula();
+    	
+    	for (int j = 0; j < size; j = j + 1) {
+    		for (int k = 1; k < size+1; k = k + 1) {
+    			
+    			// digit k appears AT LEAST ONCE in column j
+    			Clause c1 = new Clause();
+    			for (int i = 0; i < size; i = i + 1) {
+    				Variable v_ijk = occupies[i][j][k];
+    				Literal l = PosLiteral.make(v_ijk);
+    				c1 = c1.add(l);
+    			}
+    			foc4 = foc4.addClause(c1);
+    			
+    			// digit k appears AT MOST ONCE in column j
+    			for (int i = 0; i < size; i = i + 1) {
+    				Variable v_ijk = occupies[i][j][k];
+    				Literal l1 = NegLiteral.make(v_ijk);
+    				for (int i2 = i + 1; i2 < size; i2 = i2 + 1) {
+    					Variable v_i2jk = occupies[i2][j][k];
+    					Literal l2 = NegLiteral.make(v_i2jk);
+    					Clause c2 = new Clause(l1).add(l2);
+    					foc4 = foc4.addClause(c2);
+    				}
+    			}
+    		}
+    	}
+    	
+    	
+    	// in each block, each digit must appear exactly once
+    	Formula foc5 = new Formula();
+    	
+    	for (int br = 0; br < dim; br = br + 1) {	// br: block rows
+    		for (int bc = 0; bc < dim; bc = bc + 1) {	// bc: block columns
+    			for (int k = 1; k < size+1; k = k + 1) {
+    				
+    				// digit k appears AT LEAST ONCE in this block
+    				Clause c1 = new Clause();
+    				for (int i = 0; i < dim; i = i + 1) {
+    					for (int j = 0; j < dim; j = j + 1) {
+    						Variable v_ijk = occupies[br*dim + i][bc*dim + j][k];
+    						Literal l = PosLiteral.make(v_ijk);
+        					c1 = c1.add(l);
+    					}
+    				}
+    				foc5 = foc5.addClause(c1);
+    				
+    				// digit k appears AT MOST ONCE in this block
+    				for (int i = 0; i < dim; i = i + 1) {
+    					for (int j = 0; j < dim; j = j + 1) {
+    						Variable v_ijk = occupies[br*dim + i][bc*dim + j][k];
+    						Literal l1 = NegLiteral.make(v_ijk);
+        					for (int i2 = i; i2 < dim; i2 = i2 + 1) {
+        						for (int j2 = j + 1; j2 < dim; j2 = j2 + 1) {
+        							Variable v_i2j2k =
+        									occupies[br*dim + i2][bc*dim + j2][k];
+        							Literal l2 = NegLiteral.make(v_i2j2k);
+        							Clause c2 = new Clause();
+        							c2 = c2.add(l1).add(l2);
+        							foc5 = foc5.addClause(c2);
+        						}
+        					}
+    					}
+    				}
+    			}
+    		}
+    	}
 
-        // TODO: implement this.
-        throw new RuntimeException("not yet implemented.");
+    	// take conjunction (f1 and f2 and f3 and f4 and f5) to produce a
+    	// propositional formula that SAT solver is able to solve
+    	foc = foc1.and(foc2).and(foc3).and(foc4).and(foc5);
+    	return foc;
     }
 
     /**
@@ -256,9 +399,18 @@ public class Sudoku {
      *         blank entries.
      */
     public Sudoku interpretSolution(Environment e) {
-
-        // TODO: implement this.
-        throw new RuntimeException("not yet implemented.");
+    	Sudoku solution = new Sudoku(dim);
+    	for (int i = 0; i < size; i = i + 1) {
+    		for (int j = 0; j < size; j = j + 1) {
+    			for (int k = 1; k < size+1; k = k + 1) {
+    				Variable v_ijk = occupies[i][j][k];
+    				if (e.get(v_ijk) == Bool.TRUE) {
+    					solution.square[i][j] = k;
+    				}
+    			}
+    		}
+    	}
+    	return solution;
     }
 
 }
