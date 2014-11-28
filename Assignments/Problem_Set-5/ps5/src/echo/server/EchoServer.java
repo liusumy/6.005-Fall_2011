@@ -14,7 +14,7 @@ import java.io.PrintWriter;
 public class EchoServer {
 	
 	/** default port number where the echo server listen for connection */
-	private static final int ECHO_PORT = 8080;
+	private static final int ECHO_PORT = 4444;
 	
 	private ServerSocket serverSocket;
 	
