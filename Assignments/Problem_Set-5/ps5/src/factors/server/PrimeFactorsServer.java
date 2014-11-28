@@ -40,17 +40,17 @@ public class PrimeFactorsServer {
     private ServerSocket serverSocket;
     
     /**
-	 * Make a PrimeFactorsServer that listens for connections on port.
-	 * @param port port number, requires 0 <= port <= 65535
+     * Make a PrimeFactorsServer that listens for connections on port.
+     * @param port port number, requires 0 <= port <= 65535
 	 */
     public PrimeFactorsServer(int port) throws IOException {
     	serverSocket = new ServerSocket(port);
     }
     
     /**
-	 * Run the server, listening for connection and handling them.
-	 * @throws IOException if the main server socket is broken
-	 */
+     * Run the server, listening for connection and handling them.
+     * @throws IOException if the main server socket is broken
+     */
     private void serve() throws IOException {
     	while (true) {
     		// blocks untils a client connects
@@ -150,6 +150,7 @@ public class PrimeFactorsServer {
 	 * @param N the number to be factored in to primes
 	 * @param low the lower bound of prime factors
 	 * @param high the upper bound of prime factors
+	 * @return an array of prime factors of number N
 	 */
 	private static BigInteger[] findPrimeFactors(BigInteger N,
 			BigInteger low, BigInteger high) {
