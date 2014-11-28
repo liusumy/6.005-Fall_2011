@@ -8,10 +8,10 @@ import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+
+import factors.engine.PrimeFactorsEngine;
 
 /**
  *  PrimeFactorsServer performs the "server-side" algorithm 
@@ -101,7 +101,8 @@ public class PrimeFactorsServer {
 			BigInteger N = new BigInteger(args[1]);
 			BigInteger low = new BigInteger(args[2]);
 			BigInteger high = new BigInteger(args[3]);
-			BigInteger[] primeFactors = findPrimeFactors(N, low, high);
+			BigInteger[] primeFactors = PrimeFactorsEngine.findPrimeFactors(
+					N, low, high, PRIME_CERTAINTY);
 			for (int i = 0; i < primeFactors.length; i = i + 1) {
 				sendReply(out, "found " + N + " " + primeFactors[i]);
 			}
@@ -142,32 +143,6 @@ public class PrimeFactorsServer {
     	out.print(message + "\n");
     	out.flush();	// important! flush out the buffer so the reply gets sent
     }
-    
-    /**
-	 * Given the range of values (low <= x <= high) to search through,
-	 * find all prime factors of a number N (N >= 2), such that x divides
-	 * N evenly. Repeated prime factors will be found multiple time.
-	 * @param N the number to be factored in to primes
-	 * @param low the lower bound of prime factors
-	 * @param high the upper bound of prime factors
-	 * @return an array of prime factors of number N
-	 */
-	private static BigInteger[] findPrimeFactors(BigInteger N,
-			BigInteger low, BigInteger high) {
-		List<BigInteger> primeFactors = new ArrayList<BigInteger>();
-		BigInteger x = new BigInteger(low.toByteArray());
-		BigInteger upperBound = high.add(new BigInteger("1"));
-		while (x.compareTo(upperBound) == -1) {	// iterate over x from low to high
-			if (x.isProbablePrime(PRIME_CERTAINTY)) {
-				while (N.remainder(x).compareTo(new BigInteger("0")) == 0) {
-					primeFactors.add(x);
-					N = N.divide(x);
-				}
-			}
-			x = x.add(new BigInteger("1"));
-		}
-		return primeFactors.toArray(new BigInteger[0]);
-	}
     
     /**
      * @param args String array containing Program arguments.  It should only 
