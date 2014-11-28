@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PrimeFactorsEngine {
-	private static final int CERTAINTY = 5;
+	private static final int PRIME_CERTAINTY = 5;
 	/**
 	 * Given the range of values (low <= x <= high) to search through,
 	 * find all prime factors of a number N (N >= 2), such that x divides
@@ -20,7 +20,7 @@ public class PrimeFactorsEngine {
 		BigInteger x = new BigInteger(low.toByteArray());
 		BigInteger upperBound = high.add(new BigInteger("1"));
 		while (x.compareTo(upperBound) == -1) {	// iterate over x from low to high
-			if (x.isProbablePrime(CERTAINTY)) {
+			if (x.isProbablePrime(PRIME_CERTAINTY)) {
 				while (N.remainder(x).compareTo(new BigInteger("0")) == 0) {
 					primeFactors.add(x);
 					N = N.divide(x);

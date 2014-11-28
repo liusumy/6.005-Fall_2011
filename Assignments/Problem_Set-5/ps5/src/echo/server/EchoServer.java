@@ -46,7 +46,7 @@ public class EchoServer {
 	
 	/**
 	 * Handle one client connection. Return when client disconnect.
-	 * @param clientSocket socket where client is connected
+	 * @param clientSocket socket for a connected client to handle
 	 * @throws IOException if connection encounters an error
 	 */
 	private void handle(Socket clientSocket) throws IOException {
@@ -56,10 +56,10 @@ public class EchoServer {
 				new OutputStreamWriter(clientSocket.getOutputStream()));
 		try {
 			// each request is a single line of message
-			String message = in.readLine();
-			while (message != null) {
-				sendReply(out, message);
-				message = in.readLine();
+			String request = in.readLine();
+			while (request != null) {
+				sendReply(out, request);
+				request = in.readLine();
 			}
 		} finally {
 			out.close();
@@ -75,7 +75,7 @@ public class EchoServer {
 	 */
 	public void sendReply(PrintWriter out, String message) throws IOException {
 		out.print(message + "\n");
-		out.flush();	// important! flush out buffer so the reply is sent
+		out.flush();	// important! flush out buffer so the reply gets sent
 	}
 	
     /**
@@ -98,7 +98,7 @@ public class EchoServer {
 				port = Integer.parseInt(args[0]);
 			} catch (NumberFormatException nfe) {
 				// complain about ill-formatted argument
-				System.err.println("EchoServer: ill-formatted port: " + args[0]);
+				System.err.println("EchoServer: illegal port, " + args[0]);
 				nfe.printStackTrace();
 			}
 		}
