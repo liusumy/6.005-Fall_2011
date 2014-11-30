@@ -96,6 +96,7 @@ public class PrimeFactorsServer {
      */
     private void processRequest(String request, PrintWriter out)
     		throws IOException {
+//    	System.out.println(request);
     	if (validateRequest(request) == true) {
 			String[] args = request.split("\\s");
 			BigInteger N = new BigInteger(args[1]);
@@ -113,9 +114,10 @@ public class PrimeFactorsServer {
     }
     
     /**
-     * Validate if the client's request is legal.
-     * @return true if the client's request is legal, or
-     * 		   false if that request is ill-formatted
+     * Validate if the client's request is legal, according to Client-to-Server
+     * message protocol.
+     * @return true if the client's request is in a legitimate form, otherwise
+     * 		   return false.	   
      */
     private boolean validateRequest(String request) {
     	Pattern protocol = Pattern.compile("factor\\s\\d+\\s\\d+\\s\\d+");
@@ -123,7 +125,7 @@ public class PrimeFactorsServer {
     	if (protocolMatcher.find()) {
     		String[] args = request.split("\\s");
     		BigInteger N = new BigInteger(args[1]);
-    		if (! (N.compareTo(new BigInteger("2")) == -1)) {	// N >= 2
+    		if (! (N.compareTo(BigInteger.valueOf(2)) == -1)) {	// N >= 2
     			return true;
     		} else {
     			return false;

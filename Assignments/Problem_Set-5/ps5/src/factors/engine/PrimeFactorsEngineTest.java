@@ -13,41 +13,36 @@ public class PrimeFactorsEngineTest {
 	@Test
 	public void primeFactorsEngineTest001() {
 		BigInteger[] expected = new BigInteger[] {
-				new BigInteger("5"), new BigInteger("17")};
-		BigInteger[] actual = PrimeFactorsEngine.findPrimeFactors(
-				new BigInteger("85"), new BigInteger("2"),
-				new BigInteger("17"), PRIME_CERTAINTY);
-		assertArrayEquals(actual, expected);
+				BigInteger.valueOf(5), BigInteger.valueOf(17)};
+		BigInteger[] actual = PrimeFactorsEngine.findPrimeFactors(BigInteger.valueOf(85),
+				BigInteger.valueOf(2), BigInteger.valueOf(17), PRIME_CERTAINTY);
+		assertArrayEquals(expected, actual);
 	}
 	
 	@Test
 	public void primeFactorsEngineTest002() {
-		BigInteger[] expected = new BigInteger[] {new BigInteger("5")};
-		BigInteger[] actual = PrimeFactorsEngine.findPrimeFactors(
-				new BigInteger("85"), new BigInteger("2"),
-				new BigInteger("16"), PRIME_CERTAINTY);
-		assertArrayEquals(actual, expected);
+		BigInteger[] expected = new BigInteger[] {BigInteger.valueOf(5)};
+		BigInteger[] actual = PrimeFactorsEngine.findPrimeFactors(BigInteger.valueOf(85),
+				BigInteger.valueOf(2), BigInteger.valueOf(16), PRIME_CERTAINTY);
+		assertArrayEquals(expected, actual);
 	}
 	
 	@Test
 	public void primeFactorsEngineTest003() {
 		BigInteger[] expected = new BigInteger[] {};
-		BigInteger[] actual = PrimeFactorsEngine.findPrimeFactors(
-				new BigInteger("85"), new BigInteger("2"),
-				new BigInteger("4"), PRIME_CERTAINTY);
-		assertArrayEquals(actual, expected);
+		BigInteger[] actual = PrimeFactorsEngine.findPrimeFactors(BigInteger.valueOf(85),
+				BigInteger.valueOf(2), BigInteger.valueOf(4), PRIME_CERTAINTY);
+		assertArrayEquals(expected, actual);
 	}
 	
 	@Test
 	public void primeFactorsEngineTest004() {
 		BigInteger[] expected = new BigInteger[] {
-				new BigInteger("2"), new BigInteger("2"),
-				new BigInteger("2"), new BigInteger("3"),
-				new BigInteger("11")
-		};
-		BigInteger[] actual = PrimeFactorsEngine.findPrimeFactors(
-				new BigInteger("264"), new BigInteger("2"),
-				new BigInteger("17"), PRIME_CERTAINTY);
-		assertArrayEquals(actual, expected);
+				BigInteger.valueOf(2), BigInteger.valueOf(2),
+				BigInteger.valueOf(2), BigInteger.valueOf(3),
+				BigInteger.valueOf(11)};
+		BigInteger[] actual = PrimeFactorsEngine.findPrimeFactors(BigInteger.valueOf(264),
+				BigInteger.valueOf(2), BigInteger.valueOf(17), PRIME_CERTAINTY);
+		assertArrayEquals(expected, actual);
 	}
 }
